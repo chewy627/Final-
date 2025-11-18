@@ -1,0 +1,22 @@
+#this is how I create or set working directory within RStudio
+setwd("/cloud/project")
+
+library(read)
+Sleep <- read_csv("Sleep_Health_and_Lifestyle_Dataset.csv")
+
+
+nrow(Sleep)
+#374 rows of data
+names(Sleep)
+#[1] "Person ID","Gender", "Age", "Occupation","Sleep Duration",
+#"Quality of Sleep", "Physical Activity Level" "Stress Level"           
+# "BMI Category", "Blood Pressure","Heart Rate", "Daily Steps","Sleep Disorder"         
+
+#install.packages("pastecs")
+
+
+library(pastecs)
+
+by(Sleep$`Sleep Duration`, Sleep$Gender, stat.desc)
+
+by(Sleep$`Sleep Duration`, Sleep$Occupation, stat.desc)
