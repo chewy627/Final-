@@ -1,0 +1,110 @@
+#this is how I create or set working directory within RStudio
+setwd("/cloud/project")
+
+
+sleep <- read_csv("Sleep_health_and_lifestyle_dataset.csv")
+
+install.packages("pastecs")
+
+
+library(pastecs)
+
+by(sleep$`Sleep Duration`, sleep$Gender, stat.desc)
+
+by(sleep$`Sleep Duration`, sleep$Occupation, stat.desc)
+
+
+sleep <- read.csv("Sleep_health_and_lifestyle_dataset.csv", header=TRUE)
+names(sleep)   
+"Sleep.Duration" 
+"Occupation" 
+"Gender" 
+
+sleep$Gender <- as.factor(sleep$Gender)
+sleep$Occupation <- as.factor(sleep$Occupation)
+
+
+#install the ggplot2 package
+install.packages("ggplot2")
+
+
+#Load the package and all of its dependencies
+library(ggplot2)
+
+##############
+## BOX PLOT ##
+##############
+
+
+
+
+boxplot_Gender <- ggplot(sleep, aes(Gender  , Sleep.Duration))
+boxplot_Gender + geom_boxplot() 
+
+
+boxplot_occupation <- ggplot(sleep, aes(Occupation  , Sleep.Duration))
+boxplot_occupation + geom_boxplot() 
+
+install.packages("shiny")
+library(shiny)
+library(ggplot2)
+library(pastecs)
+
+# Convert necessary columns to factors
+sleep$Gender <- as.factor(sleep$Gender)
+sleep$Occupation <- as.factor(sleep$Occupation)
+
+# UI: Define the user interface
+ui <- fluidPage(
+  
+  # App title
+  titlePanel("Sleep Duration Analysis"),
+  
+  sidebarLayout(
+    
+    # Sidebar panel
+    sidebarPanel(
+      selectInput("group_var", 
+                  label = "Choose a grouping variable",
+                  choices = c("Gender", "Occupation"),
+                  selected = "Gender")
+    ),
+    
+    # Main panel
+    mainPanel(
+      plotOutput("sleep_plot"),
+      hr(),
+      h4("Statistics Table"),
+      tableOutput("stats_table")
+    )
+  )
+)
+
+# Server logic
+server <- function(input, output) {
+  
+  # Render the boxplot
+  output$sleep_plot <- renderPlot({
+    ggplot(sleep, aes_string(x = input$group_var, y = "Sleep.Duration")) +
+      geom_boxplot(fill = "skyblue") +
+      labs(title = paste("Boxplot of Sleep Duration by", input$group_var),
+           x = input$group_var,
+           y = "Sleep Duration") +
+      theme_minimal()
+  })
+  
+  # Render statistics table
+  output$stats_table <- renderTable({
+    
+    # Grouped statistical summary using pastecs
+    stats <- by(sleep$Sleep.Duration, sleep[[input$group_var]], stat.desc, basic = TRUE, desc = TRUE, norm = FALSE)
+    
+    # Convert "by" result to a clean data frame
+    stats_df <- do.call(rbind, stats)
+    round(stats_df, 2)  # round numbers for readability
+    
+  }, rownames = TRUE)
+}
+
+# Run the application
+shinyApp(ui = ui, server = server)
