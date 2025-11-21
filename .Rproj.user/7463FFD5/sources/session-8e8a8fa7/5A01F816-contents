@@ -1,0 +1,46 @@
+#this is how I create or set working directory within RStudio
+setwd("/cloud/project")
+
+
+sleep <- read_csv("Sleep_health_and_lifestyle_dataset.csv")
+
+install.packages("pastecs")
+
+
+library(pastecs)
+
+by(sleep$`Sleep Duration`, sleep$Gender, stat.desc)
+
+by(sleep$`Sleep Duration`, sleep$Occupation, stat.desc)
+
+
+sleep <- read.csv("Sleep_health_and_lifestyle_dataset.csv", header=TRUE)
+names(sleep)   
+"Sleep.Duration" 
+"Occupation" 
+"Gender" 
+
+sleep$Gender <- as.factor(sleep$Gender)
+sleep$Occupation <- as.factor(sleep$Occupation)
+
+
+#install the ggplot2 package
+install.packages("ggplot2")
+
+
+#Load the package and all of its dependencies
+library(ggplot2)
+
+##############
+## BOX PLOT ##
+##############
+
+
+
+
+boxplot_Gender <- ggplot(sleep, aes(Gender  , Sleep.Duration))
+boxplot_Gender + geom_boxplot() 
+
+
+boxplot_occupation <- ggplot(sleep, aes(Occupation  , Sleep.Duration))
+boxplot_occupation + geom_boxplot() 
